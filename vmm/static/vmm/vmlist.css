@@ -1,0 +1,5 @@
+ul li{ list-style: none;}
+.di{ margin:auto; margin-top:10px; margin-left: 170px; margin-right: 170px;}
+.bode{ border: solid 1px black; margin: 5px; width: 180px; background-color: #f8f8f9; height: 255px; padding: 5px;}
+.center{text-align: center; margin: auto;}
+.right{text-align: right;}

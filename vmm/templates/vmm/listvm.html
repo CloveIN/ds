@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load staticfiles %}
+    <link type="text/css" rel="stylesheet" href="{% static 'vmm/zui/css/zui.css' %}"/>
+    <!-- ZUI 标准版压缩后的 CSS 文件 -->
+    <link type="text/css" rel="stylesheet" href="{% static 'vmm/vmlist.css' %}"/>
+    <!-- ZUI Javascript 依赖 jQuery -->
+    <script src="{% static 'vmm/jquery-3.2.1.min.js' %}"></script>
+    <!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+    <script src="{% static 'vmm/zui/js/zui.js' %}"></script>
+    <script>
+        function shutvm(uuid) {
+            window.open("http://127.0.0.1:8000/power?uuid=" + uuid + "&type=" + 'Off');
+        }
+
+        function openvm(uuid) {
+            window.open("http://127.0.0.1:8000/power?uuid=" + uuid + "&type=" + 'On');
+        }
+
+        function rebootvm(uuid) {
+            window.open("http://127.0.0.1:8000/power?uuid=" + uuid + "&type=" + 'Reboot');
+        }
+    </script>
+<body>
+<div class="di">
+    <div class="cards cards-borderless">
+        {% for vm in vms %}
+            {% if vm.config.template %}
+            {% else %}
+
+                <div class="col-md-4 col-sm-6 col-lg-3 bode">
+                    <a class="card center" href="###">
+                        <div class="card-heading center"><strong>{{ vm.summary.config.name }}</strong></div>
+                        {% if vm.summary.runtime.powerState|length > 9 %}
+                            <img src="{% static 'vmm/vmoff.png' %}" alt="">
+                        {% else %}
+                            {% if vm.guest.guestFamily == "windowsGuest" %}
+                                <div><img src="{% static 'vmm/windows.png' %}" alt="" align="center"></div>
+                                {% elif vm.guest.guestFamily == "linuxGuest" %}
+                                <div><img src="{% static 'vmm/linux.png' %}" alt="" align="center"></div>
+                            {% endif %}
+                        {% endif %}
+                        <div class="caption">
+                            <ul style="padding: 0">
+                                <li>
+                                    IP：{{ vm.summary.guest.ipAddress }}
+                                </li>
+                                <li>
+                                    {{ vm.guest.guestFamily }}
+                                </li>
+                                <li>
+                                    CPU/MHz：{{ vm.summary.quickStats.overallCpuUsage }}/{{ vm.summary.runtime.maxCpuUsage }}
+                                </li>
+                                <li>
+                                    内存/MB：{{ vm.summary.quickStats.guestMemoryUsage }}/{{ vm.summary.runtime.maxMemoryUsage }}
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="card-content text-muted">良辰美景奈何天，赏心乐事谁家院。</div>
+                        <div class="card-actions center">
+                            {% if vm.summary.runtime.powerState|length > 9 %}
+                                <input class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal" type="button"
+                                        value="打开" onclick="openvm('{{ vm.summary.config.instanceUuid }}')">
+                            {% else %}
+                                <input type="button" class="btn btn-primary btn-sm"
+                                       onclick="shutvm('{{ vm.summary.config.instanceUuid }}')" value="关闭" onclick="openvm('{{ vm.summary.config.instanceUuid }}')"/>
+                                <input type="button" class="btn btn-primary btn-sm"
+                                       onclick="rebootvm('{{ vm.summary.config.instanceUuid }}')" value="重启" onclick="openvm('{{ vm.summary.config.instanceUuid }}')"/>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!--
+<div class="modal fade" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+        <h4 class="modal-title">确认</h4>
+      </div>
+      <div class="modal-body">
+        <p>确认是否进行下一步</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        <button type="button" class="btn btn-primary" >确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+-->
+
+</body>
+</html>
